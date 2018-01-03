@@ -11,7 +11,7 @@
 # I disabled this because for package like `language-markdown`, the `data-grammer` attribute is different.
 # 'atom-workspace atom-text-editor[data-grammar*="gfm"], .platform-win32 atom-workspace atom-text-editor[data-grammar*="gfm"], .platform-linux atom-workspace atom-text-editor[data-grammar="source gfm"], .platform-darwin atom-workspace atom-text-editor[data-grammar="source gfm"]':
 'atom-text-editor':
-  'ctrl-shift-m': 'markdown-preview-enhanced:toggle'
+  'cmd-shift-m': 'markdown-preview-enhanced:toggle'
 
 '.editor[data-grammar*="gfm"], .editor[data-grammar*="md"], .editor[data-grammar*="markdown"]':
   'shift-enter': 'markdown-preview-enhanced:run-code-chunk'

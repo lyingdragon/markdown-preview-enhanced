@@ -186,7 +186,7 @@ class MarkdownPreviewEnhancedView {
             }
             // load preview template
             const html = yield this.engine.generateHTMLTemplateForPreview({
-                inputString: this.editor.getText(),
+                inputString: this.addImportedFiletoView(this.editor.getText()),
                 config: {
                     sourceUri: this.editor.getPath(),
                     initialLine: this.editor.getCursorBufferPosition().row,
@@ -201,7 +201,7 @@ class MarkdownPreviewEnhancedView {
                 this.webview.reload();
             }
             else {
-                this.webview.loadURL(mume.utility.addFileProtocol(htmlFilePath)); // This will crash Atom if webview is not visible. 
+                this.webview.loadURL(mume.utility.addFileProtocol(htmlFilePath)); // This will crash Atom if webview is not visible.
             }
         });
     }
@@ -384,7 +384,7 @@ class MarkdownPreviewEnhancedView {
             return this.loadPreview(); // restart preview.
         }
         // not presentation mode
-        const text = this.editor.getText();
+        const text = this.addImportedFiletoView(this.editor.getText());
         // notice webview that we started parsing markdown
         this.postMessage({ command: 'startParsingMarkdown' });
         this.engine.parseMD(text, { isForPreview: true, useRelativeFilePath: false, hideFrontMatter: false, triggeredBySave })
@@ -732,6 +732,14 @@ class MarkdownPreviewEnhancedView {
      */
     onPreviewDidDestroy(cb) {
         this._destroyCB = cb;
+    }
+
+    //added by lyingdragon on 01/03
+    addImportedFiletoView(inString) {
+      const regex = /{% include\s+(".+.md")\s+%}/g;
+      const toText = "@import $1";
+      console.log(inString.replace(regex, toText));
+      return inString.replace(regex, toText);
     }
 }
 MarkdownPreviewEnhancedView.MESSAGE_DISPATCH_EVENTS = {
