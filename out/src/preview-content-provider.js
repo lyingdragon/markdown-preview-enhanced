@@ -12,6 +12,7 @@ const atom_1 = require("atom");
 const path = require("path");
 const fs = require("fs");
 const mume = require("@shd101wyy/mume");
+const findUp = require("find-up");
 /**
  * Key is editor.getPath()
  * Value is temp html file path.
@@ -162,6 +163,16 @@ class MarkdownPreviewEnhancedView {
             yield this.loadPreview();
             this.initEditorEvents();
             this.initPreviewEvents();
+
+            //add by lyingdragon 2018.01.23
+            this.gitbookRoot = path.dirname(this.getEditor().getPath());
+            findUp('book.json', {'cwd': this.gitbookRoot }).then(filepath => {
+              //console.log( "atom root =" + atom.project.getPaths()[0]);
+              if( filepath != null ) {
+                this.gitbookRoot = path.dirname(filepath).replace(atom.project.getPaths()[0], "");
+              }
+              //return path.dirname(filepath);
+            });
         });
     }
     /**
@@ -736,10 +747,16 @@ class MarkdownPreviewEnhancedView {
 
     //added by lyingdragon on 01/03
     addImportedFiletoView(inString) {
-      const regex = /{% include\s+(".+.md")\s+%}/g;
-      const toText = "@import $1";
-      console.log(inString.replace(regex, toText));
-      return inString.replace(regex, toText);
+      const regex = /{% include\s+"(\..+.md)"\s+%}/g;
+      const toText = "@import $1/";
+      inString = inString.replace(regex, toText);
+
+      //console.log("gitbookRoot = " + this.gitbookRoot);
+      const regex_absolute = /{% include\s+"(\/.+.md)"\s+%}/g;
+      const toText_absolute = "@import \"" + this.gitbookRoot + "$1\"";
+      inString = inString.replace(regex_absolute, toText_absolute);
+      
+      return inString;
     }
 }
 MarkdownPreviewEnhancedView.MESSAGE_DISPATCH_EVENTS = {
